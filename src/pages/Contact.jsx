@@ -22,8 +22,13 @@ const Contact = () => {
   const [notificationMessage, setNotificationMessage] = useState('');
 
   useEffect(() => {
-    // EmailJS initialization
-    emailjs.init("FEmlmuXBQGjPmdPZw");
+    // EmailJS initialization with better error handling
+    try {
+      emailjs.init("FEmlmuXBQGjPmdPZw");
+      console.log('EmailJS başarıyla başlatıldı');
+    } catch (error) {
+      console.error('EmailJS başlatma hatası:', error);
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -42,6 +47,36 @@ const Contact = () => {
 
     return () => observer.disconnect();
   }, []);
+
+  // Test EmailJS configuration
+  const testEmailJS = async () => {
+    try {
+      console.log('EmailJS yapılandırması test ediliyor...');
+      
+      // Test template parametreleri
+      const testParams = {
+        from_name: 'Test Kullanıcı',
+        from_phone: '0555 555 55 55',
+        from_email: 'test@example.com',
+        subject: 'Test Mesajı',
+        message: 'Bu bir test mesajıdır.',
+        to_name: 'Dönderler İnşaat'
+      };
+      
+      const response = await emailjs.send(
+        'service_hvyv51x',
+        'template_9d1fpjd',
+        testParams,
+        'FEmlmuXBQGjPmdPZw'
+      );
+      
+      console.log('Test başarılı:', response);
+      showToast('success', 'EmailJS yapılandırması doğru!');
+    } catch (error) {
+      console.error('Test hatası:', error);
+      showToast('error', `Test hatası: ${error.text || error.message}`);
+    }
+  };
 
   // Show notification function
   const showToast = (type, message) => {
@@ -158,6 +193,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
+      // İlk deneme - standart parametreler
       const templateParams = {
         from_name: formData.name,
         from_phone: formData.phone,
@@ -167,11 +203,43 @@ const Contact = () => {
         to_name: 'Dönderler İnşaat'
       };
       
-      const response = await emailjs.send(
-        'service_donderler',
-        'template_donderler',
-        templateParams
-      );
+                      console.log('EmailJS gönderiliyor...', {
+                  serviceId: 'service_hvyv51x',
+                  templateId: 'template_9d1fpjd',
+                  templateParams
+                });
+      
+      let response;
+      try {
+                          // İlk deneme
+                  response = await emailjs.send(
+                    'service_hvyv51x',
+                    'template_9d1fpjd',
+                    templateParams,
+                    'FEmlmuXBQGjPmdPZw'
+                  );
+      } catch (firstError) {
+        console.log('İlk deneme başarısız, alternatif parametreler deneniyor...', firstError);
+        
+        // Alternatif parametreler
+        const alternativeParams = {
+          user_name: formData.name,
+          user_phone: formData.phone,
+          user_email: formData.email,
+          user_subject: formData.subject,
+          user_message: formData.message,
+          company_name: 'Dönderler İnşaat'
+        };
+        
+                          response = await emailjs.send(
+                    'service_hvyv51x',
+                    'template_9d1fpjd',
+                    alternativeParams,
+                    'FEmlmuXBQGjPmdPZw'
+                  );
+      }
+      
+      console.log('EmailJS yanıtı:', response);
       
       if (response.status === 200) {
         setSubmitStatus('success');
@@ -184,12 +252,53 @@ const Contact = () => {
           message: ''
         });
       } else {
-        throw new Error('Email gönderilemedi');
+        throw new Error(`Email gönderilemedi. Status: ${response.status}`);
       }
     } catch (error) {
-      console.error('Email gönderme hatası:', error);
+      console.error('Email gönderme hatası detayları:', {
+        message: error.message,
+        text: error.text,
+        status: error.status,
+        stack: error.stack
+      });
+      
+      // Fallback: Kullanıcıya doğrudan iletişim bilgilerini göster
+      const fallbackMessage = `
+Mesajınız şu anda gönderilemiyor. Lütfen aşağıdaki iletişim bilgilerini kullanarak bizimle iletişime geçin:
+
+📞 Telefon: 0 533-569-10-05
+📧 E-posta: donderlerinsaathafriyat@gmail.com
+
+Mesajınız:
+Ad Soyad: ${formData.name}
+Telefon: ${formData.phone}
+E-posta: ${formData.email}
+Konu: ${formData.subject}
+Mesaj: ${formData.message}
+      `;
+      
+      // Fallback mesajını kopyala
+      navigator.clipboard.writeText(fallbackMessage).then(() => {
+        showToast('info', 'İletişim bilgileri panoya kopyalandı. Lütfen manuel olarak iletişime geçin.');
+      }).catch(() => {
+        showToast('info', 'Lütfen telefon veya e-posta ile iletişime geçin.');
+      });
+      
+      let errorMessage = 'Mesaj gönderilirken bir hata oluştu. Lütfen telefon veya e-posta ile iletişime geçin.';
+      
+      // Daha spesifik hata mesajları
+      if (error.status === 400) {
+        errorMessage = 'Form bilgilerinde hata var. Lütfen tüm alanları kontrol ediniz.';
+      } else if (error.status === 401) {
+        errorMessage = 'EmailJS yapılandırma hatası. Lütfen telefon veya e-posta ile iletişime geçin.';
+      } else if (error.status === 429) {
+        errorMessage = 'Çok fazla istek gönderildi. Lütfen birkaç dakika sonra tekrar deneyiniz.';
+      } else if (error.text) {
+        errorMessage = `Email gönderme hatası: ${error.text}`;
+      }
+      
       setSubmitStatus('error');
-      showToast('error', 'Mesaj gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.');
+      showToast('error', errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -393,6 +502,17 @@ const Contact = () => {
                       'Mesajı Gönder'
                     )}
                   </button>
+                  
+                  {/* Test button for development */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <button
+                      type="button"
+                      onClick={testEmailJS}
+                      className="w-full mt-4 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-300"
+                    >
+                      EmailJS Test Et
+                    </button>
+                  )}
                 </form>
               </div>
             </div>
@@ -486,7 +606,9 @@ const Contact = () => {
         <div className={`fixed top-4 right-4 z-50 p-6 rounded-2xl shadow-2xl transform transition-all duration-500 ${
           notificationType === 'success' 
             ? 'bg-green-500 text-white' 
-            : 'bg-red-500 text-white'
+            : notificationType === 'error'
+            ? 'bg-red-500 text-white'
+            : 'bg-blue-500 text-white'
         }`} role="alert" aria-live="polite">
           <div className="flex items-center space-x-3">
             <div className="w-6 h-6" aria-hidden="true">
@@ -494,9 +616,13 @@ const Contact = () => {
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-              ) : (
+              ) : notificationType === 'error' ? (
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               )}
             </div>
