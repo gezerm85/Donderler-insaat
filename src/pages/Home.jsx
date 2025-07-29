@@ -216,6 +216,32 @@ const Home = () => {
 
       {/* Hero Slider */}
       <section className="relative h-screen overflow-hidden" aria-label="Ana Slider">
+        {/* Mobile-specific CSS */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @media (max-width: 640px) {
+              .mobile-bg-position {
+                background-position: center center !important;
+                background-size: contain !important;
+                background-repeat: no-repeat !important;
+                background-color: #000 !important;
+              }
+              .mobile-bg-fallback {
+                background-position: center center !important;
+                background-size: contain !important;
+                background-repeat: no-repeat !important;
+                background-color: #000 !important;
+              }
+            }
+            @media (min-width: 641px) {
+              .mobile-bg-position {
+                background-position: center center !important;
+                background-size: cover !important;
+              }
+            }
+          `
+        }} />
+        
         {/* Slides */}
         <div className="relative h-full">
           {slides.map((slide, index) => (
@@ -227,33 +253,49 @@ const Home = () => {
             >
               {/* Background Image */}
               <div 
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${slide.image})` }}
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat mobile-bg-position"
+                style={{ 
+                  backgroundImage: `url(${slide.image})`,
+                  backgroundPosition: 'center center',
+                  backgroundSize: 'cover'
+                }}
                 role="img"
                 aria-label={slide.alt}
               >
-                <div className="absolute inset-0 bg-black/50"></div>
+                {/* Mobile-specific overlay */}
+                <div className="absolute inset-0 bg-black/70 sm:bg-black/50"></div>
+                
+                {/* Mobile background positioning fix */}
+                <div 
+                  className="sm:hidden absolute inset-0 mobile-bg-fallback" 
+                  style={{
+                    backgroundImage: `url(${slide.image})`,
+                    backgroundPosition: 'center center',
+                    backgroundSize: 'contain',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundColor: '#000',
+                    opacity: 0.5
+                  }}
+                ></div>
               </div>
 
               {/* Content */}
-              <div className="relative z-10 flex items-center justify-center h-full">
-                <div className="text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-
-
+              <div className="relative z-10 flex items-center justify-center h-full px-4 sm:px-6 lg:px-8">
+                <div className="text-center max-w-5xl mx-auto w-full">
                   {/* Title */}
-                  <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold text-white mb-6 opacity-0 transform translate-y-10 transition-all duration-1000 delay-300">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl xl:text-8xl font-bold text-white mb-4 sm:mb-6 opacity-0 transform translate-y-10 transition-all duration-1000 delay-300 leading-tight">
                     <span className="block bg-gradient-to-r from-white via-orange-100 to-orange-200 bg-clip-text text-transparent animate-pulse">
                       {slide.title}
                     </span>
                   </h1>
 
                   {/* Subtitle */}
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl text-orange-300 mb-8 opacity-0 transform translate-y-10 transition-all duration-1000 delay-500 font-semibold">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-orange-300 mb-4 sm:mb-8 opacity-0 transform translate-y-10 transition-all duration-1000 delay-500 font-semibold leading-tight">
                     {slide.subtitle}
                   </h2>
 
                   {/* Description */}
-                  <p className="text-lg sm:text-xl text-gray-300 mb-12 opacity-0 transform translate-y-10 transition-all duration-1000 delay-700 max-w-3xl mx-auto leading-relaxed">
+                  <p className="text-sm sm:text-lg lg:text-xl text-gray-300 mb-8 sm:mb-12 opacity-0 transform translate-y-10 transition-all duration-1000 delay-700 max-w-3xl mx-auto leading-relaxed px-2">
                     {slide.description}
                   </p>
 
@@ -261,11 +303,11 @@ const Home = () => {
                   <div className="opacity-0 transform translate-y-10 transition-all duration-1000 delay-900">
                     <Link 
                       to="/services"
-                      className="inline-flex items-center px-10 py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-full shadow-2xl transform hover:scale-110 transition-all duration-500 group"
+                      className="inline-flex items-center px-6 sm:px-10 py-3 sm:py-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-base sm:text-xl rounded-full shadow-2xl transform hover:scale-110 transition-all duration-500 group"
                       aria-label="Hizmetlerimizi keşfetmek için tıklayın"
                     >
                       <span>Hizmetlerimizi Keşfedin</span>
-                      <svg className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg className="ml-2 sm:ml-3 w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </Link>
@@ -279,31 +321,31 @@ const Home = () => {
         {/* Navigation Arrows */}
         <button
           onClick={prevSlide}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 group z-20"
+          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 group z-20"
           aria-label="Önceki slayt"
         >
-          <svg className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
         <button
           onClick={nextSlide}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 group z-20"
+          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 group z-20"
           aria-label="Sonraki slayt"
         >
-          <svg className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
 
         {/* Dots Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20" role="tablist" aria-label="Slayt navigasyonu">
+        <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3 z-20" role="tablist" aria-label="Slayt navigasyonu">
           {slides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
                 index === currentSlide 
                   ? 'bg-orange-500 scale-125' 
                   : 'bg-white/50 hover:bg-white/80'
@@ -315,12 +357,12 @@ const Home = () => {
           ))}
         </div>
 
-        {/* Floating elements */}
-        <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-orange-400 rounded-full animate-ping" aria-hidden="true"></div>
-        <div className="absolute top-3/4 right-1/4 w-3 h-3 bg-orange-300 rounded-full animate-ping delay-1000" aria-hidden="true"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-orange-500 rounded-full animate-ping delay-500" aria-hidden="true"></div>
-        <div className="absolute top-1/2 right-1/3 w-3 h-3 bg-orange-200 rounded-full animate-ping delay-1500" aria-hidden="true"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-4 h-4 bg-orange-300 rounded-full animate-ping delay-2000" aria-hidden="true"></div>
+        {/* Floating elements - hidden on mobile for better performance */}
+        <div className="hidden sm:block absolute top-1/4 left-1/4 w-4 h-4 bg-orange-400 rounded-full animate-ping" aria-hidden="true"></div>
+        <div className="hidden sm:block absolute top-3/4 right-1/4 w-3 h-3 bg-orange-300 rounded-full animate-ping delay-1000" aria-hidden="true"></div>
+        <div className="hidden sm:block absolute bottom-1/4 left-1/3 w-2 h-2 bg-orange-500 rounded-full animate-ping delay-500" aria-hidden="true"></div>
+        <div className="hidden sm:block absolute top-1/2 right-1/3 w-3 h-3 bg-orange-200 rounded-full animate-ping delay-1500" aria-hidden="true"></div>
+        <div className="hidden sm:block absolute bottom-1/3 right-1/4 w-4 h-4 bg-orange-300 rounded-full animate-ping delay-2000" aria-hidden="true"></div>
       </section>
 
       {/* Features Section */}
