@@ -894,7 +894,7 @@ Mesaj: ${formData.message}
               </div>
 
               {/* Map Overlay Info */}
-              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-orange-200 max-w-sm">
+              <div className="absolute max-md:hidden top-4 left-4 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-orange-200 max-w-sm ">
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
                     <svg
@@ -917,7 +917,7 @@ Mesaj: ${formData.message}
                       />
                     </svg>
                   </div>
-                  <div>
+                  <div >
                     <h4 className="text-lg font-bold text-slate-800 mb-2">
                       Dönderler İnşaat
                     </h4>
