@@ -1,40 +1,40 @@
-import { useEffect, useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { useEffect, useRef, useState } from "react";
+import emailjs from "@emailjs/browser";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 const Contact = () => {
   const sectionRef = useRef(null);
   const formRef = useRef(null);
   const contactInfoRef = useRef(null);
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    subject: 'Hizmet talebi',
-    message: ''
+    name: "",
+    phone: "",
+    email: "",
+    subject: "Hizmet talebi",
+    message: "",
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
-  const [notificationType, setNotificationType] = useState('success');
-  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationType, setNotificationType] = useState("success");
+  const [notificationMessage, setNotificationMessage] = useState("");
 
   useEffect(() => {
     // EmailJS initialization with better error handling
     try {
       emailjs.init("FEmlmuXBQGjPmdPZw");
-      console.log('EmailJS başarıyla başlatıldı');
+      console.log("EmailJS başarıyla başlatıldı");
     } catch (error) {
-      console.error('EmailJS başlatma hatası:', error);
+      console.error("EmailJS başlatma hatası:", error);
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in-up');
+            entry.target.classList.add("animate-fade-in-up");
           }
         });
       },
@@ -48,42 +48,14 @@ const Contact = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Test EmailJS configuration
-  const testEmailJS = async () => {
-    try {
-      console.log('EmailJS yapılandırması test ediliyor...');
-      
-      // Test template parametreleri
-      const testParams = {
-        from_name: 'Test Kullanıcı',
-        from_phone: '0555 555 55 55',
-        from_email: 'test@example.com',
-        subject: 'Test Mesajı',
-        message: 'Bu bir test mesajıdır.',
-        to_name: 'Dönderler İnşaat'
-      };
-      
-      const response = await emailjs.send(
-        'service_hvyv51x',
-        'template_9d1fpjd',
-        testParams,
-        'FEmlmuXBQGjPmdPZw'
-      );
-      
-      console.log('Test başarılı:', response);
-      showToast('success', 'EmailJS yapılandırması doğru!');
-    } catch (error) {
-      console.error('Test hatası:', error);
-      showToast('error', `Test hatası: ${error.text || error.message}`);
-    }
-  };
+
 
   // Show notification function
   const showToast = (type, message) => {
     setNotificationType(type);
     setNotificationMessage(message);
     setShowNotification(true);
-    
+
     // Auto hide after 5 seconds
     setTimeout(() => {
       setShowNotification(false);
@@ -92,106 +64,108 @@ const Contact = () => {
 
   // Validation functions
   const validateName = (name) => {
-    if (!name.trim()) return 'Ad Soyad alanı zorunludur';
-    if (name.trim().length < 2) return 'Ad Soyad en az 2 karakter olmalıdır';
-    if (name.trim().length > 50) return 'Ad Soyad en fazla 50 karakter olabilir';
+    if (!name.trim()) return "Ad Soyad alanı zorunludur";
+    if (name.trim().length < 2) return "Ad Soyad en az 2 karakter olmalıdır";
+    if (name.trim().length > 50)
+      return "Ad Soyad en fazla 50 karakter olabilir";
     if (!/^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]+$/.test(name.trim())) {
-      return 'Ad Soyad sadece harf içerebilir';
+      return "Ad Soyad sadece harf içerebilir";
     }
-    return '';
+    return "";
   };
 
   const validatePhone = (phone) => {
-    if (!phone.trim()) return 'Telefon alanı zorunludur';
+    if (!phone.trim()) return "Telefon alanı zorunludur";
     const phoneRegex = /^[0-9\s\-\+\(\)]{10,15}$/;
     if (!phoneRegex.test(phone.trim())) {
-      return 'Geçerli bir telefon numarası giriniz';
+      return "Geçerli bir telefon numarası giriniz";
     }
-    return '';
+    return "";
   };
 
   const validateEmail = (email) => {
-    if (!email.trim()) return 'E-posta alanı zorunludur';
+    if (!email.trim()) return "E-posta alanı zorunludur";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) {
-      return 'Geçerli bir e-posta adresi giriniz';
+      return "Geçerli bir e-posta adresi giriniz";
     }
-    return '';
+    return "";
   };
 
   const validateMessage = (message) => {
-    if (!message.trim()) return 'Mesaj alanı zorunludur';
-    if (message.trim().length < 10) return 'Mesaj en az 10 karakter olmalıdır';
-    if (message.trim().length > 1000) return 'Mesaj en fazla 1000 karakter olabilir';
-    return '';
+    if (!message.trim()) return "Mesaj alanı zorunludur";
+    if (message.trim().length < 10) return "Mesaj en az 10 karakter olmalıdır";
+    if (message.trim().length > 1000)
+      return "Mesaj en fazla 1000 karakter olabilir";
+    return "";
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     newErrors.name = validateName(formData.name);
     newErrors.phone = validatePhone(formData.phone);
     newErrors.email = validateEmail(formData.email);
     newErrors.message = validateMessage(formData.message);
 
     setErrors(newErrors);
-    
-    return !Object.values(newErrors).some(error => error !== '');
+
+    return !Object.values(newErrors).some((error) => error !== "");
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    let error = '';
-    
+    let error = "";
+
     switch (name) {
-      case 'name':
+      case "name":
         error = validateName(value);
         break;
-      case 'phone':
+      case "phone":
         error = validatePhone(value);
         break;
-      case 'email':
+      case "email":
         error = validateEmail(value);
         break;
-      case 'message':
+      case "message":
         error = validateMessage(value);
         break;
       default:
         break;
     }
-    
-    setErrors(prev => ({
+
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
-      showToast('error', 'Lütfen form hatalarını düzeltiniz');
+      showToast("error", "Lütfen form hatalarını düzeltiniz");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // İlk deneme - standart parametreler
       const templateParams = {
@@ -200,27 +174,30 @@ const Contact = () => {
         from_email: formData.email,
         subject: formData.subject,
         message: formData.message,
-        to_name: 'Dönderler İnşaat'
+        to_name: "Dönderler İnşaat",
       };
-      
-                      console.log('EmailJS gönderiliyor...', {
-                  serviceId: 'service_hvyv51x',
-                  templateId: 'template_9d1fpjd',
-                  templateParams
-                });
-      
+
+      console.log("EmailJS gönderiliyor...", {
+        serviceId: "service_hvyv51x",
+        templateId: "template_9d1fpjd",
+        templateParams,
+      });
+
       let response;
       try {
-                          // İlk deneme
-                  response = await emailjs.send(
-                    'service_hvyv51x',
-                    'template_9d1fpjd',
-                    templateParams,
-                    'FEmlmuXBQGjPmdPZw'
-                  );
+        // İlk deneme
+        response = await emailjs.send(
+          "service_hvyv51x",
+          "template_9d1fpjd",
+          templateParams,
+          "FEmlmuXBQGjPmdPZw"
+        );
       } catch (firstError) {
-        console.log('İlk deneme başarısız, alternatif parametreler deneniyor...', firstError);
-        
+        console.log(
+          "İlk deneme başarısız, alternatif parametreler deneniyor...",
+          firstError
+        );
+
         // Alternatif parametreler
         const alternativeParams = {
           user_name: formData.name,
@@ -228,40 +205,43 @@ const Contact = () => {
           user_email: formData.email,
           user_subject: formData.subject,
           user_message: formData.message,
-          company_name: 'Dönderler İnşaat'
+          company_name: "Dönderler İnşaat",
         };
-        
-                          response = await emailjs.send(
-                    'service_hvyv51x',
-                    'template_9d1fpjd',
-                    alternativeParams,
-                    'FEmlmuXBQGjPmdPZw'
-                  );
+
+        response = await emailjs.send(
+          "service_hvyv51x",
+          "template_9d1fpjd",
+          alternativeParams,
+          "FEmlmuXBQGjPmdPZw"
+        );
       }
-      
-      console.log('EmailJS yanıtı:', response);
-      
+
+      console.log("EmailJS yanıtı:", response);
+
       if (response.status === 200) {
-        setSubmitStatus('success');
-        showToast('success', 'Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız.');
+        setSubmitStatus("success");
+        showToast(
+          "success",
+          "Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız."
+        );
         setFormData({
-          name: '',
-          phone: '',
-          email: '',
-          subject: 'Hizmet talebi',
-          message: ''
+          name: "",
+          phone: "",
+          email: "",
+          subject: "Hizmet talebi",
+          message: "",
         });
       } else {
         throw new Error(`Email gönderilemedi. Status: ${response.status}`);
       }
     } catch (error) {
-      console.error('Email gönderme hatası detayları:', {
+      console.error("Email gönderme hatası detayları:", {
         message: error.message,
         text: error.text,
         status: error.status,
-        stack: error.stack
+        stack: error.stack,
       });
-      
+
       // Fallback: Kullanıcıya doğrudan iletişim bilgilerini göster
       const fallbackMessage = `
 Mesajınız şu anda gönderilemiyor. Lütfen aşağıdaki iletişim bilgilerini kullanarak bizimle iletişime geçin:
@@ -276,29 +256,39 @@ E-posta: ${formData.email}
 Konu: ${formData.subject}
 Mesaj: ${formData.message}
       `;
-      
+
       // Fallback mesajını kopyala
-      navigator.clipboard.writeText(fallbackMessage).then(() => {
-        showToast('info', 'İletişim bilgileri panoya kopyalandı. Lütfen manuel olarak iletişime geçin.');
-      }).catch(() => {
-        showToast('info', 'Lütfen telefon veya e-posta ile iletişime geçin.');
-      });
-      
-      let errorMessage = 'Mesaj gönderilirken bir hata oluştu. Lütfen telefon veya e-posta ile iletişime geçin.';
-      
+      navigator.clipboard
+        .writeText(fallbackMessage)
+        .then(() => {
+          showToast(
+            "info",
+            "İletişim bilgileri panoya kopyalandı. Lütfen manuel olarak iletişime geçin."
+          );
+        })
+        .catch(() => {
+          showToast("info", "Lütfen telefon veya e-posta ile iletişime geçin.");
+        });
+
+      let errorMessage =
+        "Mesaj gönderilirken bir hata oluştu. Lütfen telefon veya e-posta ile iletişime geçin.";
+
       // Daha spesifik hata mesajları
       if (error.status === 400) {
-        errorMessage = 'Form bilgilerinde hata var. Lütfen tüm alanları kontrol ediniz.';
+        errorMessage =
+          "Form bilgilerinde hata var. Lütfen tüm alanları kontrol ediniz.";
       } else if (error.status === 401) {
-        errorMessage = 'EmailJS yapılandırma hatası. Lütfen telefon veya e-posta ile iletişime geçin.';
+        errorMessage =
+          "EmailJS yapılandırma hatası. Lütfen telefon veya e-posta ile iletişime geçin.";
       } else if (error.status === 429) {
-        errorMessage = 'Çok fazla istek gönderildi. Lütfen birkaç dakika sonra tekrar deneyiniz.';
+        errorMessage =
+          "Çok fazla istek gönderildi. Lütfen birkaç dakika sonra tekrar deneyiniz.";
       } else if (error.text) {
         errorMessage = `Email gönderme hatası: ${error.text}`;
       }
-      
-      setSubmitStatus('error');
-      showToast('error', errorMessage);
+
+      setSubmitStatus("error");
+      showToast("error", errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -307,41 +297,73 @@ Mesaj: ${formData.message}
   return (
     <main className="min-h-screen">
       <Navbar />
-      
+
       {/* Hero Section */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900" aria-labelledby="contact-hero-heading">
+      <section
+        className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900"
+        aria-labelledby="contact-hero-heading"
+      >
         <div className="absolute inset-0 bg-black/40" aria-hidden="true"></div>
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl animate-pulse" aria-hidden="true"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-slate-600/20 rounded-full blur-3xl animate-pulse delay-1000" aria-hidden="true"></div>
-          <div className="absolute top-1/3 right-1/3 w-48 h-48 bg-orange-300/15 rounded-full blur-3xl animate-pulse delay-1500" aria-hidden="true"></div>
-          <div className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-slate-500/10 rounded-full blur-3xl animate-pulse delay-2000" aria-hidden="true"></div>
+          <div
+            className="absolute top-20 left-10 w-72 h-72 bg-orange-500/20 rounded-full blur-3xl animate-pulse"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute bottom-20 right-10 w-96 h-96 bg-slate-600/20 rounded-full blur-3xl animate-pulse delay-1000"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute top-1/3 right-1/3 w-48 h-48 bg-orange-300/15 rounded-full blur-3xl animate-pulse delay-1500"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute bottom-1/3 left-1/4 w-56 h-56 bg-slate-500/10 rounded-full blur-3xl animate-pulse delay-2000"
+            aria-hidden="true"
+          ></div>
         </div>
-        
+
         <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          <h1 id="contact-hero-heading" className="text-5xl sm:text-6xl lg:text-8xl font-bold text-white mb-8">
+          <h1
+            id="contact-hero-heading"
+            className="text-5xl sm:text-6xl lg:text-8xl font-bold text-white mb-8"
+          >
             <span className="block bg-gradient-to-r from-white via-orange-100 to-orange-200 bg-clip-text text-transparent animate-pulse">
               İletişim
             </span>
           </h1>
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 leading-relaxed">
             <span className="block">Bizimle iletişime geçin</span>
-            <span className="block text-orange-300 font-semibold">projelerinizi hayata geçirelim</span>
+            <span className="block text-orange-300 font-semibold">
+              projelerinizi hayata geçirelim
+            </span>
           </p>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden" aria-labelledby="contact-heading">
+      <section
+        className="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden"
+        aria-labelledby="contact-heading"
+      >
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl animate-pulse" aria-hidden="true"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-slate-600/5 rounded-full blur-3xl animate-pulse delay-1000" aria-hidden="true"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-400/3 rounded-full blur-3xl animate-pulse delay-500" aria-hidden="true"></div>
+          <div
+            className="absolute top-0 left-0 w-64 h-64 bg-orange-500/5 rounded-full blur-3xl animate-pulse"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute bottom-0 right-0 w-96 h-96 bg-slate-600/5 rounded-full blur-3xl animate-pulse delay-1000"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-400/3 rounded-full blur-3xl animate-pulse delay-500"
+            aria-hidden="true"
+          ></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
-            <h2 
+            <h2
               id="contact-heading"
               ref={sectionRef}
               className="text-5xl sm:text-6xl font-bold text-slate-800 mb-8 opacity-0 transform translate-y-10 transition-all duration-1000"
@@ -350,24 +372,33 @@ Mesaj: ${formData.message}
                 İletişim Bilgileri
               </span>
             </h2>
-            <div className="w-32 h-1 bg-gradient-to-r from-orange-500 to-orange-600 mx-auto rounded-full mt-16" aria-hidden="true"></div>
+            <div
+              className="w-32 h-1 bg-gradient-to-r from-orange-500 to-orange-600 mx-auto rounded-full mt-16"
+              aria-hidden="true"
+            ></div>
             <p className="text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed mt-8">
-              Hafriyat, altyapı işleri ve iş makinesi kiralama hizmetlerimiz hakkında bilgi almak için bizimle iletişime geçin
+              Hafriyat, altyapı işleri ve iş makinesi kiralama hizmetlerimiz
+              hakkında bilgi almak için bizimle iletişime geçin
             </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Contact Form */}
-            <div 
+            <div
               ref={formRef}
               className="opacity-0 transform translate-y-10 transition-all duration-1000 delay-300"
             >
               <div className="bg-white rounded-3xl p-10 shadow-2xl border border-slate-200">
-                <h3 className="text-3xl font-bold text-slate-800 mb-8">Mesaj Gönderin</h3>
-                
+                <h3 className="text-3xl font-bold text-slate-800 mb-8">
+                  Mesaj Gönderin
+                </h3>
+
                 <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div>
-                    <label htmlFor="name" className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
                       Ad Soyad *
                     </label>
                     <input
@@ -378,21 +409,30 @@ Mesaj: ${formData.message}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={`w-full px-4 py-3 border-2 rounded-xl text-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/20 ${
-                        errors.name ? 'border-red-500 bg-red-50' : 'border-slate-300 focus:border-orange-500'
+                        errors.name
+                          ? "border-red-500 bg-red-50"
+                          : "border-slate-300 focus:border-orange-500"
                       }`}
                       placeholder="Adınız ve soyadınız"
-                      aria-describedby={errors.name ? 'name-error' : undefined}
-                      aria-invalid={errors.name ? 'true' : 'false'}
+                      aria-describedby={errors.name ? "name-error" : undefined}
+                      aria-invalid={errors.name ? "true" : "false"}
                     />
                     {errors.name && (
-                      <p id="name-error" className="text-red-500 text-sm mt-2" role="alert">
+                      <p
+                        id="name-error"
+                        className="text-red-500 text-sm mt-2"
+                        role="alert"
+                      >
                         {errors.name}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label
+                      htmlFor="phone"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
                       Telefon *
                     </label>
                     <input
@@ -403,21 +443,32 @@ Mesaj: ${formData.message}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={`w-full px-4 py-3 border-2 rounded-xl text-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/20 ${
-                        errors.phone ? 'border-red-500 bg-red-50' : 'border-slate-300 focus:border-orange-500'
+                        errors.phone
+                          ? "border-red-500 bg-red-50"
+                          : "border-slate-300 focus:border-orange-500"
                       }`}
                       placeholder="Telefon numaranız"
-                      aria-describedby={errors.phone ? 'phone-error' : undefined}
-                      aria-invalid={errors.phone ? 'true' : 'false'}
+                      aria-describedby={
+                        errors.phone ? "phone-error" : undefined
+                      }
+                      aria-invalid={errors.phone ? "true" : "false"}
                     />
                     {errors.phone && (
-                      <p id="phone-error" className="text-red-500 text-sm mt-2" role="alert">
+                      <p
+                        id="phone-error"
+                        className="text-red-500 text-sm mt-2"
+                        role="alert"
+                      >
                         {errors.phone}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
                       E-posta *
                     </label>
                     <input
@@ -428,21 +479,32 @@ Mesaj: ${formData.message}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
                       className={`w-full px-4 py-3 border-2 rounded-xl text-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/20 ${
-                        errors.email ? 'border-red-500 bg-red-50' : 'border-slate-300 focus:border-orange-500'
+                        errors.email
+                          ? "border-red-500 bg-red-50"
+                          : "border-slate-300 focus:border-orange-500"
                       }`}
                       placeholder="E-posta adresiniz"
-                      aria-describedby={errors.email ? 'email-error' : undefined}
-                      aria-invalid={errors.email ? 'true' : 'false'}
+                      aria-describedby={
+                        errors.email ? "email-error" : undefined
+                      }
+                      aria-invalid={errors.email ? "true" : "false"}
                     />
                     {errors.email && (
-                      <p id="email-error" className="text-red-500 text-sm mt-2" role="alert">
+                      <p
+                        id="email-error"
+                        className="text-red-500 text-sm mt-2"
+                        role="alert"
+                      >
                         {errors.email}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label htmlFor="subject" className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label
+                      htmlFor="subject"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
                       Konu
                     </label>
                     <select
@@ -460,7 +522,10 @@ Mesaj: ${formData.message}
                   </div>
 
                   <div>
-                    <label htmlFor="message" className="block text-sm font-semibold text-slate-700 mb-2">
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-semibold text-slate-700 mb-2"
+                    >
                       Mesaj *
                     </label>
                     <textarea
@@ -471,14 +536,22 @@ Mesaj: ${formData.message}
                       onBlur={handleBlur}
                       rows={6}
                       className={`w-full px-4 py-3 border-2 rounded-xl text-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-orange-500/20 resize-none ${
-                        errors.message ? 'border-red-500 bg-red-50' : 'border-slate-300 focus:border-orange-500'
+                        errors.message
+                          ? "border-red-500 bg-red-50"
+                          : "border-slate-300 focus:border-orange-500"
                       }`}
                       placeholder="Mesajınızı buraya yazın..."
-                      aria-describedby={errors.message ? 'message-error' : undefined}
-                      aria-invalid={errors.message ? 'true' : 'false'}
+                      aria-describedby={
+                        errors.message ? "message-error" : undefined
+                      }
+                      aria-invalid={errors.message ? "true" : "false"}
                     />
                     {errors.message && (
-                      <p id="message-error" className="text-red-500 text-sm mt-2" role="alert">
+                      <p
+                        id="message-error"
+                        className="text-red-500 text-sm mt-2"
+                        role="alert"
+                      >
                         {errors.message}
                       </p>
                     )}
@@ -488,82 +561,142 @@ Mesaj: ${formData.message}
                     type="submit"
                     disabled={isSubmitting}
                     className={`w-full py-4 px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold text-xl rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-                    aria-label={isSubmitting ? 'Mesaj gönderiliyor...' : 'Mesajı gönder'}
+                    aria-label={
+                      isSubmitting ? "Mesaj gönderiliyor..." : "Mesajı gönder"
+                    }
                   >
                     {isSubmitting ? (
                       <div className="flex items-center justify-center">
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
                         </svg>
                         Gönderiliyor...
                       </div>
                     ) : (
-                      'Mesajı Gönder'
+                      "Mesajı Gönder"
                     )}
                   </button>
-                  
-                  {/* Test button for development */}
-                  {process.env.NODE_ENV === 'development' && (
-                    <button
-                      type="button"
-                      onClick={testEmailJS}
-                      className="w-full mt-4 py-2 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-300"
-                    >
-                      EmailJS Test Et
-                    </button>
-                  )}
+
                 </form>
               </div>
             </div>
 
             {/* Contact Information */}
-            <div 
+            <div
               ref={contactInfoRef}
               className="opacity-0 transform translate-y-10 transition-all duration-1000 delay-500"
             >
               <div className="space-y-8">
                 <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl p-10 text-white shadow-3xl">
-                  <h3 className="text-3xl font-bold mb-8">İletişim Bilgileri</h3>
-                  
+                  <h3 className="text-3xl font-bold mb-8">
+                    İletişim Bilgileri
+                  </h3>
+
                   <div className="space-y-6">
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      <div
+                        className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                          />
                         </svg>
                       </div>
                       <div>
                         <h4 className="text-xl font-semibold mb-2">Telefon</h4>
                         <p className="text-orange-100 leading-relaxed">
-                          <a href="tel:0 534 642 63 93" className="hover:text-white transition-colors duration-300">
-                          0 533-569-10-05
+                          <a
+                            href="tel:0 534 642 63 93"
+                            className="hover:text-white transition-colors duration-300"
+                          >
+                            0 533-569-10-05
                           </a>
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <div
+                        className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
                         </svg>
                       </div>
                       <div>
                         <h4 className="text-xl font-semibold mb-2">E-posta</h4>
                         <p className="text-orange-100 leading-relaxed">
-                          <a href="mailto:donderlerinsaathafriyat@gmail.com" className="hover:text-white transition-colors duration-300">
+                          <a
+                            href="mailto:donderlerinsaathafriyat@gmail.com"
+                            className="hover:text-white transition-colors duration-300"
+                          >
                             donderlerinsaathafriyat@gmail.com
                           </a>
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0" aria-hidden="true">
-                        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <div
+                        className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0"
+                        aria-hidden="true"
+                      >
+                        <svg
+                          className="w-6 h-6 text-white"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
                         </svg>
                       </div>
                       <div>
@@ -577,20 +710,31 @@ Mesaj: ${formData.message}
                 </div>
 
                 <div className="bg-white rounded-3xl p-10 shadow-2xl border border-slate-200">
-                  <h3 className="text-3xl font-bold text-slate-800 mb-8">Çalışma Saatleri</h3>
-                  
+                  <h3 className="text-3xl font-bold text-slate-800 mb-8">
+                    Çalışma Saatleri
+                  </h3>
+
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-4 bg-gradient-to-r from-orange-50 to-orange-100 rounded-xl">
-                      <span className="text-slate-700 font-medium">Hafta İçi</span>
-                      <span className="text-slate-800 font-semibold">08:00 - 18:00</span>
+                      <span className="text-slate-700 font-medium">
+                        Hafta İçi
+                      </span>
+                      <span className="text-slate-800 font-semibold">
+                        08:00 - 18:00
+                      </span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
-                      <span className="text-slate-600 font-medium">Hafta Sonu</span>
-                      <span className="text-slate-800 font-semibold">08:00 - 17:00</span>
+                      <span className="text-slate-600 font-medium">
+                        Hafta Sonu
+                      </span>
+                      <span className="text-slate-800 font-semibold">
+                        08:00 - 17:00
+                      </span>
                     </div>
                     <div className="mt-6 p-4 bg-orange-500/10 rounded-xl border border-orange-200">
                       <p className="text-slate-700 text-sm">
-                        <span className="font-semibold">Not:</span> Acil durumlar için 7/24 iletişim kurulabilir.
+                        <span className="font-semibold">Not:</span> Acil
+                        durumlar için 7/24 iletişim kurulabilir.
                       </p>
                     </div>
                   </div>
@@ -601,28 +745,276 @@ Mesaj: ${formData.message}
         </div>
       </section>
 
+      {/* Map Section */}
+      <section
+        className="py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden"
+        aria-labelledby="map-heading"
+      >
+        <div className="absolute inset-0">
+          <div
+            className="absolute top-0 left-0 w-64 h-64 bg-orange-500/10 rounded-full blur-3xl animate-pulse"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute bottom-0 right-0 w-96 h-96 bg-slate-600/10 rounded-full blur-3xl animate-pulse delay-1000"
+            aria-hidden="true"
+          ></div>
+          <div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-400/5 rounded-full blur-3xl animate-pulse delay-500"
+            aria-hidden="true"
+          ></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-16">
+            <h2
+              id="map-heading"
+              className="text-5xl sm:text-6xl font-bold text-white mb-8 opacity-0 transform translate-y-10 transition-all duration-1000"
+            >
+              <span className="bg-gradient-to-r from-white via-orange-100 to-orange-200 bg-clip-text text-transparent">
+                Konumumuz
+              </span>
+            </h2>
+            <div
+              className="w-32 h-1 bg-gradient-to-r from-orange-500 to-orange-600 mx-auto rounded-full mt-16"
+              aria-hidden="true"
+            ></div>
+            <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed mt-8">
+              Gaziantep'te hizmet verdiğimiz bölgelerde hafriyat, altyapı işleri
+              ve iş makinesi kiralama hizmetlerimizi sunuyoruz
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-8 mb-12">
+            {/* Map Info Cards */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-orange-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Hizmet Bölgesi</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Gaziantep ve çevre illerde hafriyat, altyapı işleri ve iş
+                makinesi kiralama hizmetleri
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-orange-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Hızlı Müdahale</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Acil durumlar için 7/24 hızlı müdahale ve profesyonel ekipman
+                desteği
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 hover:bg-white/20 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                  <svg
+                    className="w-6 h-6 text-orange-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">
+                  Kaliteli Hizmet
+                </h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Modern ekipmanlar ve deneyimli ekiple kaliteli hafriyat ve
+                altyapı hizmetleri
+              </p>
+            </div>
+          </div>
+
+          {/* Map Container */}
+          <div className="relative">
+            <div
+              className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-3xl blur-3xl"
+              aria-hidden="true"
+            ></div>
+            <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-orange-500/20">
+              <div className="aspect-video w-full">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3188.044631446001!2d37.8750178!3d37.3763032!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x153237f0143d5e59%3A0xb589af4014e89b3f!2zRMO8TkRFUkxFUiDDhE7EsFNBQVQgSEFGUknEsFlBVCBOT0tMw5xZQVRBTiBTQU5BWcSwIFZFIFTDh0NBUkVUIExJTcSwVEVEIFPDh0lSS0VUw4Y!5e0!3m2!1str!2str!4v1722251856609!5m2!1str!2str"
+                  width="100%"
+                  height="450"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Dönderler İnşaat Konumu"
+                  aria-label="Dönderler İnşaat Gaziantep Konumu"
+                  className="w-full h-full"
+                />
+              </div>
+
+              {/* Map Overlay Info */}
+              <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl border border-orange-200 max-w-sm">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-slate-800 mb-2">
+                      Dönderler İnşaat
+                    </h4>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-3">
+                      Gaziantep'te hafriyat, altyapı işleri ve iş makinesi
+                      kiralama hizmetleri
+                    </p>
+                    <div className="space-y-1 text-sm text-slate-600">
+                      <p>📞 0 533-569-10-05</p>
+                      <p>📧 donderlerinsaathafriyat@gmail.com</p>
+                      <p>🕒 Hafta İçi: 08:00-18:00</p>
+                      <p>🕒 Hafta Sonu: 08:00-17:00</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center mt-12">
+            <div className="inline-flex items-center space-x-4 bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h4 className="text-xl font-bold text-white mb-1">
+                  Hemen İletişime Geçin
+                </h4>
+                <p className="text-gray-300 text-sm">
+                  Projeleriniz için ücretsiz keşif ve teklif alın
+                </p>
+              </div>
+              <a
+                href="tel:0 533-569-10-05"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                Ara
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Notification Toast */}
       {showNotification && (
-        <div className={`fixed top-4 right-4 z-50 p-6 rounded-2xl shadow-2xl transform transition-all duration-500 ${
-          notificationType === 'success' 
-            ? 'bg-green-500 text-white' 
-            : notificationType === 'error'
-            ? 'bg-red-500 text-white'
-            : 'bg-blue-500 text-white'
-        }`} role="alert" aria-live="polite">
+        <div
+          className={`fixed top-4 right-4 z-50 p-6 rounded-2xl shadow-2xl transform transition-all duration-500 ${
+            notificationType === "success"
+              ? "bg-green-500 text-white"
+              : notificationType === "error"
+              ? "bg-red-500 text-white"
+              : "bg-blue-500 text-white"
+          }`}
+          role="alert"
+          aria-live="polite"
+        >
           <div className="flex items-center space-x-3">
             <div className="w-6 h-6" aria-hidden="true">
-              {notificationType === 'success' ? (
+              {notificationType === "success" ? (
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
-              ) : notificationType === 'error' ? (
+              ) : notificationType === "error" ? (
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               )}
             </div>
@@ -633,27 +1025,28 @@ Mesaj: ${formData.message}
 
       {/* Structured Data for Contact */}
       <script type="application/ld+json">
-      {JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "ContactPage",
-        "name": "İletişim - Dönderler İnşaat",
-        "description": "Gaziantep'te hafriyat, altyapı işleri ve iş makinesi kiralama hizmetleri için iletişim bilgileri",
-        "url": "https://donderlerinsaat.com.tr/contact",
-        "mainEntity": {
-          "@type": "Organization",
-          "name": "Dönderler İnşaat",
-          "telephone": "+90-533-569-10-05, +90-534-642-63-93",
-          "email": "donderlerinsaathafriyat@gmail.com",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Gaziantep",
-            "addressRegion": "Gaziantep",
-            "addressCountry": "Türkiye"
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          name: "İletişim - Dönderler İnşaat",
+          description:
+            "Gaziantep'te hafriyat, altyapı işleri ve iş makinesi kiralama hizmetleri için iletişim bilgileri",
+          url: "https://donderlerinsaat.com.tr/contact",
+          mainEntity: {
+            "@type": "Organization",
+            name: "Dönderler İnşaat",
+            telephone: "+90-533-569-10-05, +90-534-642-63-93",
+            email: "donderlerinsaathafriyat@gmail.com",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Gaziantep",
+              addressRegion: "Gaziantep",
+              addressCountry: "Türkiye",
+            },
+            openingHours: "Mo-Fr 08:00-18:00, Sa-Su 08:00-17:00",
+            areaServed: "Gaziantep",
           },
-          "openingHours": "Mo-Fr 08:00-18:00, Sa-Su 08:00-17:00",
-          "areaServed": "Gaziantep"
-        }
-      })}
+        })}
       </script>
 
       <Footer />
@@ -661,4 +1054,4 @@ Mesaj: ${formData.message}
   );
 };
 
-export default Contact; 
+export default Contact;
