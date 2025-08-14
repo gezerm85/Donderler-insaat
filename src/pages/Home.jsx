@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from '../components/Loading';
 import img1 from '../assets/img1.jpg';
 import img2 from '../assets/img2.jpg';
 import img3 from '../assets/img3.jpg';
@@ -21,6 +22,7 @@ const Home = () => {
   const buttonRef = useRef(null);
   const featuresRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   const slides = [
     {
@@ -95,6 +97,15 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
@@ -139,6 +150,8 @@ const Home = () => {
 
   return (
     <main className="min-h-screen">
+      {isLoading && <Loading />}
+      
       {/* Structured Data for Home Page */}
       <script type="application/ld+json">
       {JSON.stringify({

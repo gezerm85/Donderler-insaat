@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from '../components/Loading';
 
 // Import gallery images
 import gallery1 from '../assets/gallery/gallery1.jpg';
@@ -25,6 +26,7 @@ import gallery17 from '../assets/gallery/gallery17.jpeg';
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
   const galleryRef = useRef(null);
 
   const galleryImages = [
@@ -69,6 +71,15 @@ const Gallery = () => {
     return () => observer.disconnect();
   }, [filter]);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const openLightbox = (image) => {
     setSelectedImage(image);
     document.body.style.overflow = 'hidden';
@@ -106,6 +117,8 @@ const Gallery = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {isLoading && <Loading />}
+      
       <Navbar />
       
       {/* Hero Section */}
@@ -187,38 +200,39 @@ const Gallery = () => {
             className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
           >
             {filteredImages.map((image, index) => (
-              <div
-                key={image.id}
-                className="gallery-item break-inside-avoid mb-6 group cursor-pointer transform transition-all duration-500 hover:scale-105"
-                style={{ animationDelay: `${index * 0.1}s` }}
-                onClick={() => openLightbox(image)}
-              >
-                <div className="relative overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
-                  <img
-                    src={image.src}
-                    alt={image.title}
-                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                      <h3 className="text-lg font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        {image.title}
-                      </h3>
-                      <p className="text-sm text-orange-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.1s' }}>
-                        {image.description}
-                      </p>
-                      <div className="mt-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.2s' }}>
-                        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                          </svg>
+                <div
+                  key={image.id}
+                  className="gallery-item break-inside-avoid mb-6 group cursor-pointer transform transition-all duration-500 hover:scale-105"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                  onClick={() => openLightbox(image)}
+                >
+                  <div className="relative overflow-hidden rounded-2xl shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                    <img
+                      src={image.src}
+                      alt={image.title}
+                      className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                        <h3 className="text-lg font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                          {image.title}
+                        </h3>
+                        <p className="text-sm text-orange-200 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.1s' }}>
+                          {image.description}
+                        </p>
+                        <div className="mt-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.2s' }}>
+                          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div> 
       </section>

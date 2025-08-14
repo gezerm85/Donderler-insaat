@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from '../components/Loading';
 
 const Services = () => {
   const [activeService, setActiveService] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const sectionRef = useRef(null);
 
   const services = [
@@ -100,8 +102,19 @@ const Services = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <main className="min-h-screen">
+      {isLoading && <Loading />}
+      
       <Navbar />
       
       {/* Hero Section */}

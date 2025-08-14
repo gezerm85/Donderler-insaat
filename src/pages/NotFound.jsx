@@ -1,11 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from '../components/Loading';
 
 const NotFound = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -25,8 +27,19 @@ const NotFound = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {isLoading && <Loading />}
+      
       <Navbar />
       
       {/* Hero Section */}

@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import Loading from '../components/Loading';
 
 const About = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -24,8 +26,19 @@ const About = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <main className="min-h-screen">
+      {isLoading && <Loading />}
+      
       <Navbar />
       
       {/* Hero Section */}

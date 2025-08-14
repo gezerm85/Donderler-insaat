@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Loading from "../components/Loading";
 
 const Contact = () => {
   const sectionRef = useRef(null);
   const formRef = useRef(null);
   const contactInfoRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -16,7 +18,6 @@ const Contact = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState("success");
   const [notificationMessage, setNotificationMessage] = useState("");
@@ -48,6 +49,14 @@ const Contact = () => {
     return () => observer.disconnect();
   }, []);
 
+  // Loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
 
   // Show notification function
@@ -76,7 +85,7 @@ const Contact = () => {
 
   const validatePhone = (phone) => {
     if (!phone.trim()) return "Telefon alanı zorunludur";
-    const phoneRegex = /^[0-9\s\-\+\(\)]{10,15}$/;
+    const phoneRegex = /^[0-9\s\-+()]{10,15}$/;
     if (!phoneRegex.test(phone.trim())) {
       return "Geçerli bir telefon numarası giriniz";
     }
@@ -219,7 +228,6 @@ const Contact = () => {
       console.log("EmailJS yanıtı:", response);
 
       if (response.status === 200) {
-        setSubmitStatus("success");
         showToast(
           "success",
           "Mesajınız başarıyla gönderildi! En kısa sürede size dönüş yapacağız."
@@ -287,7 +295,6 @@ Mesaj: ${formData.message}
         errorMessage = `Email gönderme hatası: ${error.text}`;
       }
 
-      setSubmitStatus("error");
       showToast("error", errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -296,6 +303,8 @@ Mesaj: ${formData.message}
 
   return (
     <main className="min-h-screen">
+      {isLoading && <Loading />}
+      
       <Navbar />
 
       {/* Hero Section */}
