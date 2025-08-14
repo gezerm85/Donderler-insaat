@@ -6,13 +6,20 @@ import Footer from '../components/Footer';
 import gallery1 from '../assets/gallery/gallery1.jpg';
 import gallery2 from '../assets/gallery/gallery2.jpg';
 import gallery3 from '../assets/gallery/gallery3.jpg';
-import gallery4 from '../assets/gallery/gallery4.jpg';
+import gallery4 from '../assets/gallery/gallery4.jpeg';
 import gallery5 from '../assets/gallery/gallery5.jpg';
 import gallery6 from '../assets/gallery/gallery6.jpg';
 import gallery7 from '../assets/gallery/gallery7.jpg';
 import gallery8 from '../assets/gallery/gallery8.jpg';
 import gallery9 from '../assets/gallery/gallery9.jpg';
-import gallery10 from '../assets/gallery/gallery10.jpg';
+import gallery10 from '../assets/gallery/gallery10.jpeg';
+import gallery11 from '../assets/gallery/gallery11.jpeg';
+import gallery12 from '../assets/gallery/gallery12.jpeg';
+import gallery13 from '../assets/gallery/gallery13.jpeg';
+import gallery14 from '../assets/gallery/gallery14.jpeg';
+import gallery15 from '../assets/gallery/gallery15.jpeg';
+import gallery16 from '../assets/gallery/gallery16.jpeg';
+import gallery17 from '../assets/gallery/gallery17.jpeg';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -28,8 +35,15 @@ const Gallery = () => {
     { id: 6, src: gallery6, category: 'insaat', title: 'İnşaat Çalışmaları', description: 'Profesyonel inşaat ve yapı işleri' },
     { id: 7, src: gallery7, category: 'hafriyat', title: 'Hafriyat Operasyonları', description: 'Büyük ölçekli hafriyat operasyonları' },
     { id: 8, src: gallery8, category: 'altyapi', title: 'Altyapı Montajı', description: 'Boru montajı ve kilittaşı işleri' },
-    { id: 9, src: gallery9, category: 'insaat', title: 'Yapı Projeleri', description: 'Çeşitli yapı ve inşaat projeleri' },
-    { id: 10, src: gallery10, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' }
+    { id: 10, src: gallery9, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 11, src: gallery10, category: 'altyapi', title: 'Altyapı Çözümleri', description: 'Kapsamlı altyapı çözümleri ve uygulamaları' },
+    { id: 12, src: gallery11, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 13, src: gallery12, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 14, src: gallery13, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 15, src: gallery14, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 16, src: gallery15, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 17, src: gallery16, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
+    { id: 18, src: gallery17, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
   ];
 
   const filteredImages = filter === 'all' 
@@ -205,7 +219,7 @@ const Gallery = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> 
       </section>
 
       {/* Lightbox */}

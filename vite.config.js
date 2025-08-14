@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/',
   plugins: [react(), tailwindcss()],
+  assetsInclude: ['**/*.HEIC', '**/*.heic', '**/*.WEBP', '**/*.webp'],
   server: {
     historyApiFallback: true
   },
