@@ -1,20 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectAllGalleryItems } from '../store/gallerySlice';
+import { selectHeroSlides } from '../store/siteContentSlice';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
-import img1 from '../assets/img1.jpg';
-import img2 from '../assets/img2.jpg';
-import img3 from '../assets/img3.jpg';
-import img4 from '../assets/img4.jpg';
 
-// Gallery resimlerini import ediyoruz
-import gallery1 from '../assets/gallery/gallery1.jpg';
-import gallery2 from '../assets/gallery/gallery2.jpg';
-import gallery3 from '../assets/gallery/gallery3.jpg';
-import gallery4 from '../assets/gallery/gallery4.jpeg';
-import gallery5 from '../assets/gallery/gallery5.jpg';
-import gallery6 from '../assets/gallery/gallery6.jpg';
 
 const Home = () => {
   const titleRef = useRef(null);
@@ -24,50 +16,27 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
-  const slides = [
-    {
-      id: 1,
-      title: "Profesyonel Hafriyat Çözümleri",
-      subtitle: "Gaziantep'in güvenilir hafriyat ve altyapı uzmanı",
-      description: "Modern ekipmanlarımız ve uzman ekibimizle projelerinizi hayata geçiriyoruz",
-      image: img1,
-      alt: "Gaziantep hafriyat işleri - Profesyonel ekipmanlar ile temel kazı çalışmaları"
-    },
-    {
-      id: 2,
-      title: "Altyapı İşleri",
-      subtitle: "Kapsamlı altyapı çözümleri",
-      description: "İçmesuyu kanalı, boru montajı ve kilittaşı işlerinde uzmanlık",
-      image: img2,
-      alt: "Gaziantep altyapı işleri - İçmesuyu kanalı ve boru montajı hizmetleri"
-    },
-    {
-      id: 3,
-      title: "İş Makinesi Kiralama",
-      subtitle: "Modern ekipmanlar",
-      description: "En son teknoloji iş makineleri ile hızlı ve güvenli hizmet",
-      image: img3,
-      alt: "Gaziantep iş makinesi kiralama - Ekskavatör, buldozer ve yükleyici kiralama"
-    },
-    {
-      id: 4,
-      title: "İş Makinesi Kiralama",
-      subtitle: "Modern ekipmanlar",
-      description: "En son teknoloji iş makineleri ile hızlı ve güvenli hizmet",
-      image: img4,
-      alt: "Gaziantep iş makinesi kiralama - Ekskavatör, buldozer ve yükleyici kiralama"
-    }
-  ];
+  // Redux'tan gallery ve site content verilerini çek
+  const galleryItems = useSelector(selectAllGalleryItems);
+  const heroSlides = useSelector(selectHeroSlides);
 
-  // Gallery resimleri için array
-  const galleryPreview = [
-    { id: 1, src: gallery1, title: 'Hafriyat İşleri', category: 'hafriyat' },
-    { id: 2, src: gallery2, title: 'Altyapı Projeleri', category: 'altyapi' },
-    { id: 3, src: gallery3, title: 'İnşaat Çalışmaları', category: 'insaat' },
-    { id: 4, src: gallery4, title: 'Modern Ekipmanlar', category: 'hafriyat' },
-    { id: 5, src: gallery5, title: 'Altyapı Çözümleri', category: 'altyapi' },
-    { id: 6, src: gallery6, title: 'Profesyonel Hizmet', category: 'insaat' }
-  ];
+  // Hero slider verilerini Firebase'den al
+  const slides = heroSlides.map(slide => ({
+    id: slide.id,
+    title: slide.title,
+    subtitle: slide.subtitle,
+    description: slide.description,
+    image: slide.image,
+    alt: slide.alt
+  }));
+
+  // Gallery resimleri için array - Redux'tan ilk 6 veriyi al
+  const galleryPreview = galleryItems.slice(0, 6).map((item, index) => ({
+    id: item.id || index + 1,
+    src: item.src,
+    title: item.title,
+    category: item.category
+  }));
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -245,7 +214,8 @@ const Home = () => {
       <Navbar />
 
       {/* Hero Slider */}
-      <section className="relative h-screen overflow-hidden" aria-label="Ana Slider">
+      {slides.length > 0 ? (
+        <section className="relative h-screen overflow-hidden" aria-label="Ana Slider">
         {/* Mobile-specific CSS */}
         <style dangerouslySetInnerHTML={{
           __html: `
@@ -393,7 +363,17 @@ const Home = () => {
         <div className="hidden sm:block absolute bottom-1/4 left-1/3 w-2 h-2 bg-orange-500 rounded-full animate-ping delay-500" aria-hidden="true"></div>
         <div className="hidden sm:block absolute top-1/2 right-1/3 w-3 h-3 bg-orange-200 rounded-full animate-ping delay-1500" aria-hidden="true"></div>
         <div className="hidden sm:block absolute bottom-1/3 right-1/4 w-4 h-4 bg-orange-300 rounded-full animate-ping delay-2000" aria-hidden="true"></div>
-      </section>
+        </section>
+      ) : (
+        // Loading state for hero slider
+        <section className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-24 h-24 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-8"></div>
+            <h1 className="text-4xl font-bold text-white mb-4">Yükleniyor...</h1>
+            <p className="text-slate-300">Slider verileri yükleniyor</p>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100 relative overflow-hidden" aria-labelledby="features-heading">
@@ -517,36 +497,55 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mb-16">
-            {galleryPreview.map((image) => (
-              <div
-                key={image.id}
-                className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
-              >
-                <div className="aspect-square overflow-hidden">
-                  <img
-                    src={image.src}
-                    alt={image.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-lg font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      {image.title}
-                    </h3>
-                    <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.1s' }}>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        image.category === 'hafriyat' ? 'bg-orange-500' :
-                        image.category === 'altyapi' ? 'bg-blue-500' : 'bg-green-500'
-                      }`}>
-                        {image.category === 'hafriyat' ? 'Hafriyat' :
-                         image.category === 'altyapi' ? 'Altyapı' : 'İnşaat'}
-                      </span>
+            {galleryPreview.length > 0 ? (
+              galleryPreview.map((image) => (
+                <div
+                  key={image.id}
+                  className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:scale-105"
+                >
+                  <div className="aspect-square overflow-hidden">
+                    <img
+                      src={image.src}
+                      alt={image.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h3 className="text-lg font-bold mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        {image.title}
+                      </h3>
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.1s' }}>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                          image.category === 'hafriyat' ? 'bg-orange-500' :
+                          image.category === 'altyapi' ? 'bg-blue-500' : 'bg-green-500'
+                        }`}>
+                          {image.category === 'hafriyat' ? 'Hafriyat' :
+                           image.category === 'altyapi' ? 'Altyapı' : 'İnşaat'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              // Loading state veya fallback
+              Array.from({ length: 6 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="group relative overflow-hidden rounded-2xl shadow-xl bg-slate-200 animate-pulse"
+                >
+                  <div className="aspect-square flex items-center justify-center">
+                    <div className="text-slate-400 text-center">
+                      <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      <p className="text-sm">Yükleniyor...</p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="text-center">

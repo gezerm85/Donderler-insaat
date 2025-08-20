@@ -1,89 +1,63 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
+import { selectAllServices, selectServicesLoading, selectServicesError } from '../store/servicesSlice';
 
 const Services = () => {
   const [activeService, setActiveService] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
   const sectionRef = useRef(null);
 
-  const services = [
-    {
-      id: 1,
-      title: "Temel Kazı İşleri",
-      description: "Profesyonel ekipmanlarımız ve deneyimli personelimizle temel kazı işlerinizi güvenle gerçekleştiriyoruz.",
-      icon: (
+  // Redux'tan services verilerini al
+  const services = useSelector(selectAllServices);
+  const loading = useSelector(selectServicesLoading);
+  const error = useSelector(selectServicesError);
+
+  // Icon mapping function
+  const getServiceIcon = (iconName) => {
+    const iconMap = {
+      'temel-kazi': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       ),
-      features: ["Derin kazı işleri", "Temel hazırlama", "Zemin analizi", "Güvenlik önlemleri"],
-      keywords: "temel kazı, derin kazı, zemin analizi, gaziantep hafriyat"
-    },
-    {
-      id: 2,
-      title: "Altyapı İşleri",
-      description: "Modern şehirlerin ihtiyacı olan altyapı çözümlerini en yüksek kalitede sunuyoruz.",
-      icon: (
+      'altyapi': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      features: ["Yol yapımı", "Kanalizasyon", "Elektrik altyapısı", "Telekomünikasyon"],
-      keywords: "altyapı işleri, yol yapımı, kanalizasyon, elektrik altyapısı"
-    },
-    {
-      id: 3,
-      title: "İçmesuyu Kanalı ve Boru Montajı",
-      description: "Su şebekesi kurulumu ve bakımı konusunda uzman ekibimizle hizmetinizdeyiz.",
-      icon: (
+      'icmesuyu': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
         </svg>
       ),
-      features: ["Su hattı döşeme", "Boru montajı", "Vana kurulumu", "Sistem testleri"],
-      keywords: "içmesuyu kanalı, boru montajı, su hattı döşeme, vana kurulumu"
-    },
-    {
-      id: 4,
-      title: "Kilittaşı İşleri",
-      description: "Estetik ve dayanıklı kilittaşı döşeme işlerinde uzmanlaşmış ekibimizle çalışıyoruz.",
-      icon: (
+      'kilittasi': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
         </svg>
       ),
-      features: ["Yol döşeme", "Kaldırım yapımı", "Parke taşı", "Bordür döşeme"],
-      keywords: "kilittaşı, yol döşeme, kaldırım yapımı, parke taşı, bordür döşeme"
-    },
-    {
-      id: 5,
-      title: "Taşduvar Yapımı",
-      description: "Geleneksel ve modern taşduvar yapım teknikleriyle projelerinizi hayata geçiriyoruz.",
-      icon: (
+      'tasduvar': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       ),
-      features: ["İstinat duvarları", "Bahçe duvarları", "Dekoratif duvarlar", "Yapısal duvarlar"],
-      keywords: "taşduvar, istinat duvarı, bahçe duvarı, dekoratif duvar"
-    },
-    {
-      id: 6,
-      title: "Kiralık İş Makinesi",
-      description: "Modern ve bakımlı iş makinelerimizle projelerinizde yanınızdayız.",
-      icon: (
+      'is-makinesi': (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
       ),
-      features: ["Ekskavatör", "Buldozer", "Yükleyici", "Kamyon"],
-      keywords: "iş makinesi kiralama, ekskavatör kiralama, buldozer kiralama, yükleyici kiralama"
-    }
-  ];
+      'insaat': (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        </svg>
+      )
+    };
+    
+    return iconMap[iconName] || iconMap['insaat']; // Default icon
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -102,19 +76,41 @@ const Services = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Loading effect
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+
+  // Error handling
+  if (error) {
+    return (
+      <main className="min-h-screen">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[70vh] bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900">
+          <div className="text-center text-white">
+            <h1 className="text-4xl font-bold mb-4">Hata Oluştu</h1>
+            <p className="text-xl mb-6">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-6 py-3 bg-orange-500 hover:bg-orange-600 rounded-full transition-colors"
+            >
+              Sayfayı Yenile
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
+  // Loading state
+  if (loading) {
+    return (
+      <main className="min-h-screen">
+        <Loading />
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen">
-      {isLoading && <Loading />}
-      
       <Navbar />
       
       {/* Hero Section */}
@@ -166,8 +162,9 @@ const Services = () => {
           </div>
 
           {/* Services Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {services.map((service, index) => (
+          {services.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {services.map((service, index) => (
               <article
                 key={service.id}
                 className={`bg-white rounded-3xl p-10 shadow-2xl border-2 transition-all duration-500 cursor-pointer transform hover:scale-105 hover:-translate-y-2 card-hover ${
@@ -182,7 +179,7 @@ const Services = () => {
                   <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mr-6 transition-all duration-500 ${
                     activeService === index ? 'bg-gradient-to-br from-orange-500 to-orange-600 text-white scale-110' : 'bg-gradient-to-br from-orange-100 to-orange-200 text-orange-600'
                   }`} aria-hidden="true">
-                    {service.icon}
+                    {getServiceIcon(service.icon || 'insaat')}
                   </div>
                   <h3 className="text-2xl font-bold text-slate-800">{service.title}</h3>
                 </div>
@@ -199,9 +196,16 @@ const Services = () => {
                     </div>
                   ))}
                 </div>
-              </article>
-            ))}
-          </div>
+                              </article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-20">
+              <div className="w-24 h-24 border-4 border-slate-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-8"></div>
+              <h3 className="text-2xl font-bold text-slate-600 mb-4">Hizmetler Yükleniyor</h3>
+              <p className="text-slate-500">Hizmet verilerimiz yükleniyor...</p>
+            </div>
+          )}
 
           {/* Call to Action */}
           <div className="text-center mt-20">
@@ -226,26 +230,28 @@ const Services = () => {
       </section>
 
       {/* Structured Data for Services */}
-      <script type="application/ld+json">
-      {JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        "name": "Dönderler İnşaat Hizmetleri",
-        "description": "Gaziantep'te hafriyat, altyapı işleri ve iş makinesi kiralama hizmetleri",
-        "itemListElement": services.map((service, index) => ({
-          "@type": "Service",
-          "position": index + 1,
-          "name": service.title,
-          "description": service.description,
-          "provider": {
-            "@type": "LocalBusiness",
-            "name": "Dönderler İnşaat"
-          },
-          "areaServed": "Gaziantep",
-          "keywords": service.keywords
-        }))
-      })}
-      </script>
+      {services.length > 0 && (
+        <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "Dönderler İnşaat Hizmetleri",
+          "description": "Gaziantep'te hafriyat, altyapı işleri ve iş makinesi kiralama hizmetleri",
+          "itemListElement": services.map((service, index) => ({
+            "@type": "Service",
+            "position": index + 1,
+            "name": service.title,
+            "description": service.description,
+            "provider": {
+              "@type": "LocalBusiness",
+              "name": "Dönderler İnşaat"
+            },
+            "areaServed": "Gaziantep",
+            "keywords": service.keywords || ""
+          }))
+        })}
+        </script>
+      )}
 
       <Footer />
     </main>

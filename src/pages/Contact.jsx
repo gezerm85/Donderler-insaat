@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import emailjs from "@emailjs/browser";
+import { selectContactInfo, selectWorkingHours } from "../store/siteContentSlice";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Loading from "../components/Loading";
@@ -21,6 +23,10 @@ const Contact = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState("success");
   const [notificationMessage, setNotificationMessage] = useState("");
+  
+  // Redux'tan site content verilerini çek
+  const contactInfo = useSelector(selectContactInfo);
+  const workingHours = useSelector(selectWorkingHours);
 
   useEffect(() => {
     // EmailJS initialization with better error handling
@@ -642,10 +648,10 @@ Mesaj: ${formData.message}
                         <h4 className="text-xl font-semibold mb-2">Telefon</h4>
                         <p className="text-orange-100 leading-relaxed">
                           <a
-                            href="tel:0 534 642 63 93"
+                            href={`tel:${contactInfo?.phone || '05335691005'}`}
                             className="hover:text-white transition-colors duration-300"
                           >
-                            0 533-569-10-05
+                            {contactInfo?.phone || '0 533-569-10-05'}
                           </a>
                         </p>
                       </div>
@@ -674,10 +680,10 @@ Mesaj: ${formData.message}
                         <h4 className="text-xl font-semibold mb-2">E-posta</h4>
                         <p className="text-orange-100 leading-relaxed">
                           <a
-                            href="mailto:donderlerinsaathafriyat@gmail.com"
+                            href={`mailto:${contactInfo?.email || 'donderlerinsaathafriyat@gmail.com'}`}
                             className="hover:text-white transition-colors duration-300"
                           >
-                            donderlerinsaathafriyat@gmail.com
+                            {contactInfo?.email || 'donderlerinsaathafriyat@gmail.com'}
                           </a>
                         </p>
                       </div>
@@ -711,7 +717,7 @@ Mesaj: ${formData.message}
                       <div>
                         <h4 className="text-xl font-semibold mb-2">Adres</h4>
                         <address className="text-orange-100 leading-relaxed not-italic">
-                          Gaziantep, Türkiye
+                          {contactInfo?.address || 'Gaziantep, Türkiye'}
                         </address>
                       </div>
                     </div>
@@ -729,7 +735,7 @@ Mesaj: ${formData.message}
                         Hafta İçi
                       </span>
                       <span className="text-slate-800 font-semibold">
-                        08:00 - 18:00
+                        {workingHours?.weekdays || '08:00 - 18:00'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
@@ -737,7 +743,7 @@ Mesaj: ${formData.message}
                         Hafta Sonu
                       </span>
                       <span className="text-slate-800 font-semibold">
-                        08:00 - 17:00
+                        {workingHours?.weekend || '08:00 - 17:00'}
                       </span>
                     </div>
                     <div className="mt-6 p-4 bg-orange-500/10 rounded-xl border border-orange-200">
@@ -935,10 +941,10 @@ Mesaj: ${formData.message}
                       kiralama hizmetleri
                     </p>
                     <div className="space-y-1 text-sm text-slate-600">
-                      <p>📞 0 533-569-10-05</p>
-                      <p>📧 donderlerinsaathafriyat@gmail.com</p>
-                      <p>🕒 Hafta İçi: 08:00-18:00</p>
-                      <p>🕒 Hafta Sonu: 08:00-17:00</p>
+                      <p>📞 {contactInfo?.phone || '0 533-569-10-05'}</p>
+                      <p>📧 {contactInfo?.email || 'donderlerinsaathafriyat@gmail.com'}</p>
+                      <p>🕒 Hafta İçi: {workingHours?.weekdays || '08:00-18:00'}</p>
+                      <p>🕒 Hafta Sonu: {workingHours?.weekend || '08:00-17:00'}</p>
                     </div>
                   </div>
                 </div>
@@ -973,7 +979,7 @@ Mesaj: ${formData.message}
                 </p>
               </div>
               <a
-                href="tel:0 533-569-10-05"
+                href={`tel:${contactInfo?.phone || '05335691005'}`}
                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Ara

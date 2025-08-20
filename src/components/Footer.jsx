@@ -1,9 +1,16 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectAboutContent, selectContactInfo, selectWorkingHours } from '../store/siteContentSlice';
 import logo from '../assets/logo.png';
 
 const Footer = () => {
   const footerRef = useRef(null);
+  
+  // Redux'tan site content verilerini çek
+  const aboutContent = useSelector(selectAboutContent);
+  const contactInfo = useSelector(selectContactInfo);
+  const workingHours = useSelector(selectWorkingHours);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -44,14 +51,12 @@ const Footer = () => {
                   />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-orange-400">DÖNDERLER</h3>
-                  <p className="text-slate-300">İNŞAAT HAFRİYAT</p>
+                  <h3 className="text-2xl font-bold text-orange-400">{aboutContent?.title || 'DÖNDERLER'}</h3>
+                  <p className="text-slate-300">{aboutContent?.subtitle || 'İNŞAAT HAFRİYAT'}</p>
                 </div>
               </div>
               <p className="text-slate-300 mb-6 leading-relaxed">
-                Gaziantep'in güvenilir hafriyat ve altyapı uzmanı olarak, 
-                kaliteli hizmet ve müşteri memnuniyeti odaklı çalışmalarımızla 
-                projelerinizi hayata geçiriyoruz.
+                {aboutContent?.description || 'Gaziantep\'in güvenilir hafriyat ve altyapı uzmanı olarak, kaliteli hizmet ve müşteri memnuniyeti odaklı çalışmalarımızla projelerinizi hayata geçiriyoruz.'}
               </p>
               <div className="flex space-x-4">
                 {/* Facebook */}
@@ -99,40 +104,40 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-semibold mb-6 text-orange-400">İletişim</h4>
               <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span className="text-slate-300 text-sm">Gaziantep, Türkiye</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  <div className="text-slate-300 text-sm">
-                    <a href="tel:05335691005" className="block hover:text-orange-400 transition-colors duration-200">0 533 569 10 05</a>
-                    <a href="tel:05346426393" className="block hover:text-orange-400 transition-colors duration-200">0 534 642 63 93</a>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <a href="mailto:donderlerinsaathafriyat@gmail.com" className="text-slate-300 text-sm hover:text-orange-400 transition-colors duration-200">
-                    donderlerinsaathafriyat@gmail.com
-                  </a>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div className="text-slate-300 text-sm">
-                    <span className="block font-semibold">Çalışma Saatleri:</span>
-                    <span className="block">Hafta İçi: 08:00 - 18:00</span>
-                    <span className="block">Hafta Sonu: 08:00 - 17:00</span>
-                  </div>
-                </div>
+                                    <div className="flex items-center space-x-3">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span className="text-slate-300 text-sm">{contactInfo?.address || 'Gaziantep, Türkiye'}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <div className="text-slate-300 text-sm">
+                        <a href={`tel:${contactInfo?.phone || '05335691005'}`} className="block hover:text-orange-400 transition-colors duration-200">{contactInfo?.phone || '0 533 569 10 05'}</a>
+                        <a href="tel:05346426393" className="block hover:text-orange-400 transition-colors duration-200">0 534 642 63 93</a>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <a href={`mailto:${contactInfo?.email || 'donderlerinsaathafriyat@gmail.com'}`} className="text-slate-300 text-sm hover:text-orange-400 transition-colors duration-200">
+                        {contactInfo?.email || 'donderlerinsaathafriyat@gmail.com'}
+                      </a>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <svg className="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="text-slate-300 text-sm">
+                        <span className="block font-semibold">Çalışma Saatleri:</span>
+                        <span className="block">Hafta İçi: {workingHours?.weekdays || '08:00 - 18:00'}</span>
+                        <span className="block">Hafta Sonu: {workingHours?.weekend || '08:00 - 17:00'}</span>
+                      </div>
+                    </div>
               </div>
             </div>
           </div>

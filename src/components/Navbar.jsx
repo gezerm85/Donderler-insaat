@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectAboutContent } from '../store/siteContentSlice';
 import logo from '../assets/logo.png';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  
+  // Redux'tan site content verilerini çek
+  const aboutContent = useSelector(selectAboutContent);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,32 +41,32 @@ const Navbar = () => {
     }`}>
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+          {/* Logo - Sol */}
           <Link to="/" className="flex-shrink-0" aria-label="Ana sayfaya git">
-            <div className="flex items-center group">
-              <div className="w-16 h-16 mr-3 group-hover:scale-110 transition-transform duration-300">
-                <img
-                  src={logo}
-                  alt="Dönderler İnşaat Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className={`text-xl font-bold transition-colors duration-300 ${
-                  isScrolled ? 'text-orange-500' : 'text-orange-500'
-                }`}>
-                  DÖNDERLER
-                </h1>
-                <p className={`text-xs transition-colors duration-300 ${
-                  isScrolled ? 'text-black' : 'text-white'
-                }`}>
-                  İNŞAAT HAFRİYAT
-                </p>
-              </div>
+            <div className="w-16 h-16 group-hover:scale-110 transition-transform duration-300">
+              <img
+                src={logo}
+                alt="Dönderler İnşaat Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Şirket Adı - Orta (Mobilde görünür) */}
+            <div className="flex-1 flex justify-center sm:hidden">
+              <div className="text-center max-w-[70%]">
+                <span
+                  role="heading"
+                  aria-level={1}
+                  className="block text-md font-bold text-orange-500 transition-colors duration-300 truncate"
+                  title="DÖNDERLER İNŞAAT"
+                >
+                  DÖNDERLER İNŞAAT
+                </span>
+              </div>
+            </div>
+
+          {/* Desktop Menu - Sağ */}
           <div className="hidden md:block">
             <ul className="ml-10 flex items-baseline space-x-8">
               {navItems.map((item) => (
@@ -92,6 +97,8 @@ const Navbar = () => {
               ))}
             </ul>
           </div>
+
+
 
           {/* Mobile menu button */}
           <div className="md:hidden">

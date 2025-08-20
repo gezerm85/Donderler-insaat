@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectAboutContent } from '../store/siteContentSlice';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
@@ -7,6 +9,9 @@ const About = () => {
   const sectionRef = useRef(null);
   const contentRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Redux'tan site content verilerini çek
+  const aboutContent = useSelector(selectAboutContent);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -58,7 +63,7 @@ const About = () => {
             </span>
           </h1>
           <p className="text-xl sm:text-2xl lg:text-3xl text-gray-300 leading-relaxed">
-            <span className="block">Güvenilir hafriyat ve altyapı</span>
+            <span className="block">{aboutContent?.subtitle || 'Güvenilir hafriyat ve altyapı'}</span>
             <span className="block text-orange-300 font-semibold">çözümleri</span>
           </p>
         </div>
@@ -144,8 +149,7 @@ const About = () => {
                 </div>
                 
                 <p className="text-slate-600 leading-relaxed text-lg">
-                  Modern ekipmanlarımız ve uzman ekibimizle Gaziantep'te kaliteli hafriyat ve altyapı hizmetleri sunarak, 
-                  müşterilerimizin projelerini güvenle hayata geçirmelerini sağlamak.
+                  {aboutContent?.description || 'Modern ekipmanlarımız ve uzman ekibimizle Gaziantep\'te kaliteli hafriyat ve altyapı hizmetleri sunarak, müşterilerimizin projelerini güvenle hayata geçirmelerini sağlamak.'}
                 </p>
               </article>
 
@@ -220,26 +224,35 @@ const About = () => {
                 <h3 className="text-3xl font-bold text-slate-800 mb-8">Neden Bizi Seçmelisiniz?</h3>
                 
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
-                    <span className="text-slate-600 font-medium">30+ yıllık sektör deneyimi</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
-                    <span className="text-slate-600 font-medium">Modern ekipmanlar</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
-                    <span className="text-slate-600 font-medium">Uzman personel kadrosu</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
-                    <span className="text-slate-600 font-medium">Kaliteli hizmet garantisi</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
-                    <span className="text-slate-600 font-medium">Gaziantep'te yerel hizmet</span>
-                  </div>
+                  {aboutContent?.features?.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                      <span className="text-slate-600 font-medium">{feature}</span>
+                    </div>
+                  )) || (
+                    <>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                        <span className="text-slate-600 font-medium">30+ yıllık sektör deneyimi</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                        <span className="text-slate-600 font-medium">Modern ekipmanlar</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                        <span className="text-slate-600 font-medium">Uzman personel kadrosu</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                        <span className="text-slate-600 font-medium">Kaliteli hizmet garantisi</span>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full" aria-hidden="true"></div>
+                        <span className="text-slate-600 font-medium">Gaziantep'te yerel hizmet</span>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

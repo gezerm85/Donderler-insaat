@@ -1,57 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Loading from '../components/Loading';
-
-// Import gallery images
-import gallery1 from '../assets/gallery/gallery1.jpg';
-import gallery2 from '../assets/gallery/gallery2.jpg';
-import gallery3 from '../assets/gallery/gallery3.jpg';
-import gallery4 from '../assets/gallery/gallery4.jpeg';
-import gallery5 from '../assets/gallery/gallery5.jpg';
-import gallery6 from '../assets/gallery/gallery6.jpg';
-import gallery7 from '../assets/gallery/gallery7.jpg';
-import gallery8 from '../assets/gallery/gallery8.jpg';
-import gallery9 from '../assets/gallery/gallery9.jpg';
-import gallery10 from '../assets/gallery/gallery10.jpeg';
-import gallery11 from '../assets/gallery/gallery11.jpeg';
-import gallery12 from '../assets/gallery/gallery12.jpeg';
-import gallery13 from '../assets/gallery/gallery13.jpeg';
-import gallery14 from '../assets/gallery/gallery14.jpeg';
-import gallery15 from '../assets/gallery/gallery15.jpeg';
-import gallery16 from '../assets/gallery/gallery16.jpeg';
-import gallery17 from '../assets/gallery/gallery17.jpeg';
+import { 
+  selectAllGalleryItems, 
+  selectGalleryLoading, 
+  selectGalleryError,
+  selectGalleryItemsByCategory 
+} from '../store/gallerySlice';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [filter, setFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
   const galleryRef = useRef(null);
 
-  const galleryImages = [
-    { id: 1, src: gallery1, category: 'hafriyat', title: 'Profesyonel Hafriyat İşleri', description: 'Modern ekipmanlarla yapılan hafriyat çalışmaları' },
-    { id: 2, src: gallery2, category: 'altyapi', title: 'Altyapı Projeleri', description: 'Kapsamlı altyapı çözümleri ve uygulamaları' },
-    { id: 3, src: gallery3, category: 'insaat', title: 'İnşaat Projeleri', description: 'Çeşitli inşaat projelerinde uzmanlık' },
-    { id: 4, src: gallery4, category: 'hafriyat', title: 'Hafriyat Ekipmanları', description: 'En son teknoloji hafriyat makineleri' },
-    { id: 5, src: gallery5, category: 'altyapi', title: 'Altyapı İşleri', description: 'İçmesuyu ve kanalizasyon projeleri' },
-    { id: 6, src: gallery6, category: 'insaat', title: 'İnşaat Çalışmaları', description: 'Profesyonel inşaat ve yapı işleri' },
-    { id: 7, src: gallery7, category: 'hafriyat', title: 'Hafriyat Operasyonları', description: 'Büyük ölçekli hafriyat operasyonları' },
-    { id: 8, src: gallery8, category: 'altyapi', title: 'Altyapı Montajı', description: 'Boru montajı ve kilittaşı işleri' },
-    { id: 10, src: gallery9, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 11, src: gallery10, category: 'altyapi', title: 'Altyapı Çözümleri', description: 'Kapsamlı altyapı çözümleri ve uygulamaları' },
-    { id: 12, src: gallery11, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 13, src: gallery12, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 14, src: gallery13, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 15, src: gallery14, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 16, src: gallery15, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 17, src: gallery16, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-    { id: 18, src: gallery17, category: 'hafriyat', title: 'Hafriyat Çözümleri', description: 'Özel hafriyat çözümleri ve uygulamaları' },
-  ];
+  // Redux selectors
+  const galleryItems = useSelector(selectAllGalleryItems);
+  const loading = useSelector(selectGalleryLoading);
+  const error = useSelector(selectGalleryError);
+  const filteredItems = useSelector(state => selectGalleryItemsByCategory(state, filter));
 
-  const filteredImages = filter === 'all' 
-    ? galleryImages 
-    : galleryImages.filter(img => img.category === filter);
+  // Pagination logic
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredItems.slice(startIndex, endIndex);
+
+  // Reset to first page when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -71,14 +54,12 @@ const Gallery = () => {
     return () => observer.disconnect();
   }, [filter]);
 
-  // Loading effect
+  // Loading effect - Firebase'den veri geldiğinde loading'i kaldır
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (galleryItems.length > 0 && !loading) {
       setIsLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  }, [galleryItems.length, loading]);
 
   const openLightbox = (image) => {
     setSelectedImage(image);
@@ -91,15 +72,15 @@ const Gallery = () => {
   };
 
   const nextImage = () => {
-    const currentIndex = filteredImages.findIndex(img => img.id === selectedImage.id);
-    const nextIndex = (currentIndex + 1) % filteredImages.length;
-    setSelectedImage(filteredImages[nextIndex]);
+    const currentIndex = currentItems.findIndex(img => img.id === selectedImage.id);
+    const nextIndex = (currentIndex + 1) % currentItems.length;
+    setSelectedImage(currentItems[nextIndex]);
   };
 
   const prevImage = () => {
-    const currentIndex = filteredImages.findIndex(img => img.id === selectedImage.id);
-    const prevIndex = currentIndex === 0 ? filteredImages.length - 1 : currentIndex - 1;
-    setSelectedImage(filteredImages[prevIndex]);
+    const currentIndex = currentItems.findIndex(img => img.id === selectedImage.id);
+    const prevIndex = currentIndex === 0 ? currentItems.length - 1 : currentIndex - 1;
+    setSelectedImage(currentItems[prevIndex]);
   };
 
   useEffect(() => {
@@ -114,6 +95,37 @@ const Gallery = () => {
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [selectedImage]);
+
+  // Show loading while fetching data
+  if (loading && galleryItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Loading />
+      </div>
+    );
+  }
+
+  // Show error if fetch failed
+  if (error && galleryItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Veri yüklenirken hata oluştu</h2>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              Sayfayı Yenile
+            </button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
@@ -156,7 +168,7 @@ const Gallery = () => {
                   : 'bg-slate-100 text-slate-700 hover:bg-orange-100'
               }`}
             >
-              Tümü
+              Tümü ({galleryItems.length})
             </button>
             <button
               onClick={() => setFilter('hafriyat')}
@@ -166,7 +178,7 @@ const Gallery = () => {
                   : 'bg-slate-100 text-slate-700 hover:bg-orange-100'
               }`}
             >
-              Hafriyat İşleri
+              Hafriyat İşleri ({galleryItems.filter(item => item.category === 'hafriyat').length})
             </button>
             <button
               onClick={() => setFilter('altyapi')}
@@ -176,7 +188,7 @@ const Gallery = () => {
                   : 'bg-slate-100 text-slate-700 hover:bg-orange-100'
               }`}
             >
-              Altyapı Projeleri
+              Altyapı Projeleri ({galleryItems.filter(item => item.category === 'altyapi').length})
             </button>
             <button
               onClick={() => setFilter('insaat')}
@@ -186,7 +198,7 @@ const Gallery = () => {
                   : 'bg-slate-100 text-slate-700 hover:bg-orange-100'
               }`}
             >
-              İnşaat Projeleri
+              İnşaat Projeleri ({galleryItems.filter(item => item.category === 'insaat').length})
             </button>
           </div>
         </div>
@@ -195,11 +207,16 @@ const Gallery = () => {
       {/* Gallery Grid */}
       <section className="py-16 bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="container mx-auto px-4">
-          <div 
-            ref={galleryRef}
-            className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
-          >
-            {filteredImages.map((image, index) => (
+          {filteredItems.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">Bu kategoride henüz proje bulunmuyor.</p>
+            </div>
+          ) : (
+            <div 
+              ref={galleryRef}
+              className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6"
+            >
+              {currentItems.map((image, index) => (
                 <div
                   key={image.id}
                   className="gallery-item break-inside-avoid mb-6 group cursor-pointer transform transition-all duration-500 hover:scale-105"
@@ -222,7 +239,7 @@ const Gallery = () => {
                         </p>
                         <div className="mt-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500" style={{ transitionDelay: '0.2s' }}>
                           <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
-                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                             </svg>
                           </div>
@@ -231,9 +248,103 @@ const Gallery = () => {
                     </div>
                   </div>
                 </div>
-              ))
-            }
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center space-x-2 mt-12">
+              {/* Previous Page Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                  currentPage === 1
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    : 'bg-orange-500 text-white hover:bg-orange-600 transform hover:scale-105'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, index) => {
+                const pageNumber = index + 1;
+                const isActive = pageNumber === currentPage;
+                
+                // Show limited page numbers for better UX
+                if (totalPages <= 7) {
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                        isActive
+                          ? 'bg-orange-500 text-white shadow-lg'
+                          : 'bg-slate-100 text-slate-700 hover:bg-orange-100 transform hover:scale-105'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                } else {
+                  // Show first, last, current, and nearby pages
+                  if (pageNumber === 1 || pageNumber === totalPages || 
+                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)) {
+                    return (
+                      <button
+                        key={pageNumber}
+                        onClick={() => setCurrentPage(pageNumber)}
+                        className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                          isActive
+                            ? 'bg-orange-500 text-white shadow-lg'
+                            : 'bg-slate-100 text-slate-700 hover:bg-orange-100 transform hover:scale-105'
+                        }`}
+                      >
+                        {pageNumber}
+                      </button>
+                    );
+                  } else if (pageNumber === currentPage - 2 || pageNumber === currentPage + 2) {
+                    return (
+                      <span key={pageNumber} className="px-2 py-2 text-slate-400">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                }
+              })}
+
+              {/* Next Page Button */}
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
+                  currentPage === totalPages
+                    ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                    : 'bg-orange-500 text-white hover:bg-orange-600 transform hover:scale-105'
+                }`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {/* Page Info */}
+          {totalPages > 1 && (
+            <div className="text-center mt-6 text-slate-600">
+              <p className="text-sm">
+                Sayfa {currentPage} / {totalPages} • 
+                Toplam {filteredItems.length} proje • 
+                Sayfa başına {itemsPerPage} proje
+              </p>
+            </div>
+          )}
         </div> 
       </section>
 
@@ -283,7 +394,7 @@ const Gallery = () => {
                 <h3 className="text-2xl font-bold text-white mb-2">{selectedImage.title}</h3>
                 <p className="text-orange-200">{selectedImage.description}</p>
                 <div className="mt-4 text-sm text-slate-300">
-                  {filteredImages.findIndex(img => img.id === selectedImage.id) + 1} / {filteredImages.length}
+                  {currentItems.findIndex(img => img.id === selectedImage.id) + 1} / {currentItems.length}
                 </div>
               </div>
             </div>

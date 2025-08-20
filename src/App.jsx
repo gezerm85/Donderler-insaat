@@ -1,11 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { fetchGalleryItems } from './store/gallerySlice';
+import { fetchSiteContent } from './store/siteContentSlice';
+import { fetchAllServices } from './store/servicesSlice';
+import { checkAuthState } from './store/authSlice';
 import Home from './pages/Home';
 import About from './pages/About';
-import Services from './pages/Services';
-import Contact from './pages/Contact';
-import Gallery from './pages/Gallery';
 import NotFound from './pages/NotFound';
+import Services from './pages/Services';
+import Gallery from './pages/Gallery';
+import Contact from './pages/Contact';
+import AdminPanel from './pages/AdminPanel';
 import './App.css';
 
 // SEO Component
@@ -84,6 +90,16 @@ const SEOUpdater = () => {
 };
 
 function App() {
+  const dispatch = useDispatch();
+
+  // App component mount olduğunda gallery ve site content verilerini çek
+  useEffect(() => {
+    dispatch(fetchGalleryItems());
+    dispatch(fetchSiteContent());
+    dispatch(fetchAllServices());
+    dispatch(checkAuthState());
+  }, [dispatch]);
+
   return (
     <Router>
       <div className="App">
@@ -94,6 +110,7 @@ function App() {
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/yonetim-paneli" element={<AdminPanel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
